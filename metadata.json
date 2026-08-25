@@ -1,0 +1,8 @@
+{
+  "name": "3. Sınıf Hazine Avı: Okuma Anlama Macerası",
+  "description": "3. sınıf öğrencileri için hazine haritası, metin okuma, seslendirme ve interaktif anlama sorularıyla zenginleştirilmiş eğitici okuma oyunu.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
