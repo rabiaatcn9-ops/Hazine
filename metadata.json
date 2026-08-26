@@ -1,6 +1,6 @@
 {
-  "name": "3. Sınıf Hazine Avı: Okuma Anlama Macerası",
-  "description": "3. sınıf öğrencileri için hazine haritası, metin okuma, seslendirme ve interaktif anlama sorularıyla zenginleştirilmiş eğitici okuma oyunu.",
+  "name": "3. Sınıf Hazine Avı: Okuma Anlama ve Yazar Kaşif",
+  "description": "Rabia Öğretmen ilkokul 1., 2. ve 3. sınıflar için okuma anlama, harf-hece-kelime-cümle birleştirme oyunları, 150'şer okuma metni ve zıt/eş anlamlı kelimeler eşleştirme platformu.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

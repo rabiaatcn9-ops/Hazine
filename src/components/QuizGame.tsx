@@ -88,30 +88,16 @@ export const QuizGame: React.FC<QuizGameProps> = ({
     }
   };
 
-  // Request Mascot Hint from AI backend
-  const handleRequestMascotHint = async () => {
+  // Request Mascot Clue
+  const handleRequestMascotHint = () => {
     if (aiHint) return;
-    setIsLoadingHint(true);
     sounds.playClick();
-
-    try {
-      const response = await fetch("/api/mascot-hint", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: currentQ.question,
-          options: currentQ.options,
-          textExcerpt: currentQ.clueSentence || story.paragraphs[0],
-        }),
-      });
-
-      if (!response.ok) throw new Error("Hint error");
-      const data = await response.json();
-      setAiHint(data.hint || "Metindeki ipucu cümlesine dikkatlice tekrar bakabilirsin!");
-    } catch {
-      setAiHint(currentQ.clueSentence ? `İpucu: "${currentQ.clueSentence}"` : "Hikayedeki anahtar kelimelere odaklan kaşif!");
-    } finally {
-      setIsLoadingHint(false);
+    if (currentQ.clueSentence) {
+      setAiHint(`💡 İpucu: "${currentQ.clueSentence}"`);
+    } else if (currentQ.explanation) {
+      setAiHint(`💡 İpucu: ${currentQ.explanation}`);
+    } else {
+      setAiHint("💡 İpucu: Hikayedeki anahtar kelimelere odaklan kaşif!");
     }
   };
 

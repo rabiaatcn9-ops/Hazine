@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Volume2, Sparkles, BookOpen, X, MessageCircle } from "lucide-react";
-import { sounds } from "../utils/soundEffects";
+import React from "react";
+import { Volume2, BookOpen, X } from "lucide-react";
 
 interface VocabModalProps {
   word: string;
@@ -13,14 +12,6 @@ export const VocabModal: React.FC<VocabModalProps> = ({
   defaultMeaning,
   onClose,
 }) => {
-  const [aiExplanation, setAiExplanation] = useState<{
-    explanation: string;
-    example: string;
-    synonym?: string;
-    cheer?: string;
-  } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-
   // Play audio pronunciation of the word in Turkish
   const handlePronounce = () => {
     if (typeof window !== "undefined" && window.speechSynthesis) {
@@ -31,39 +22,6 @@ export const VocabModal: React.FC<VocabModalProps> = ({
       window.speechSynthesis.speak(utterance);
     }
   };
-
-  // Fetch AI Kid-friendly explanation
-  const handleFetchAIExplanation = async () => {
-    setIsLoading(true);
-    sounds.playClick();
-
-    try {
-      const response = await fetch("/api/explain-word", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ word }),
-      });
-
-      if (!response.ok) throw new Error("Fetch error");
-      const data = await response.json();
-      setAiExplanation(data);
-    } catch {
-      setAiExplanation({
-        explanation: defaultMeaning || "Bu kelime 3. sınıf okuma metninde önemli bir yere sahiptir.",
-        example: `Öğrenciler "${word}" kelimesini cümle içinde dikkatle kullandılar.`,
-        cheer: "Gak gak! Kelime hazinen her gün daha da büyüyor genç kaşif!",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    // If no default meaning is given, automatically fetch AI explanation
-    if (!defaultMeaning) {
-      handleFetchAIExplanation();
-    }
-  }, [word]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
@@ -83,7 +41,7 @@ export const VocabModal: React.FC<VocabModalProps> = ({
           </div>
           <div>
             <span className="text-[11px] font-bold text-emerald-800 uppercase tracking-wider block">
-              Kaptan Gaga'nın Sözlüğü
+              Kelime Dedektifi Sandığı
             </span>
             <h3 className="text-xl font-extrabold text-amber-950 font-['Fredoka',sans-serif]">
               {word}
@@ -109,43 +67,27 @@ export const VocabModal: React.FC<VocabModalProps> = ({
               📖 Kelimenin Anlamı:
             </strong>
             <p className="text-sm sm:text-base text-slate-800 leading-relaxed font-['Quicksand',sans-serif]">
-              {aiExplanation ? aiExplanation.explanation : defaultMeaning || "Yükleniyor..."}
+              {defaultMeaning || "Bu kelime okuma metninde önemli bir yere sahiptir."}
             </p>
           </div>
 
-          {aiExplanation?.example && (
-            <div className="pt-2 border-t border-amber-100">
-              <strong className="text-xs text-emerald-800 font-bold block mb-0.5">
-                💡 Cümle İçinde Kullanımı:
-              </strong>
-              <p className="text-xs sm:text-sm text-slate-700 italic">
-                "{aiExplanation.example}"
-              </p>
-            </div>
-          )}
+          <div className="pt-2 border-t border-amber-100">
+            <strong className="text-xs text-emerald-800 font-bold block mb-0.5">
+              💡 Örnek Kullanım:
+            </strong>
+            <p className="text-xs sm:text-sm text-slate-700 italic">
+              "{word} kelimesini öğrenerek kelime dağarcığımızı zenginleştirdik."
+            </p>
+          </div>
 
-          {aiExplanation?.cheer && (
-            <div className="bg-emerald-50 p-2 rounded-xl text-[11px] text-emerald-900 font-semibold border border-emerald-200">
-              🦜 {aiExplanation.cheer}
-            </div>
-          )}
+          <div className="bg-emerald-50 p-2 rounded-xl text-[11px] text-emerald-900 font-semibold border border-emerald-200">
+            🦜 Harika bir kelime öğrendin, kelime hazinen her gün daha da büyüyor!
+          </div>
         </div>
-
-        {/* Explain more with AI button */}
-        {!aiExplanation && (
-          <button
-            onClick={handleFetchAIExplanation}
-            disabled={isLoading}
-            className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold text-xs sm:text-sm shadow-md border border-purple-400 flex items-center justify-center gap-1.5 transition-all"
-          >
-            <Sparkles className="w-4 h-4 text-yellow-300" />
-            <span>{isLoading ? "Papağan Gaga Düşünüyor..." : "Papağandan Daha Detaylı Örnek İste"}</span>
-          </button>
-        )}
 
         <button
           onClick={onClose}
-          className="w-full mt-3 py-2.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-xs sm:text-sm border border-amber-400 transition-colors"
+          className="w-full mt-2 py-2.5 rounded-xl bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold text-xs sm:text-sm border border-amber-400 transition-colors"
         >
           Anladım, Kapat
         </button>

@@ -1,4 +1,4 @@
-export type Difficulty = "kolay" | "orta" | "ileri";
+export type GradeLevel = 1 | 2 | 3;
 
 export type QuestionType = "multiple_choice" | "true_false" | "ordering" | "cloze";
 
@@ -11,9 +11,6 @@ export interface Question {
   explanation: string;
   clueSentence?: string;
   category?: "5N1K" | "Neden-Sonuç" | "Ana Fikir" | "Sözcük Bilgisi" | "Olay Sıralama" | "Karakter Analizi";
-  // For ordering question types
-  orderingItems?: string[];
-  correctOrder?: number[];
 }
 
 export interface VocabularyWord {
@@ -25,6 +22,7 @@ export interface VocabularyWord {
 export interface IslandStory {
   id: string;
   levelNumber: number;
+  gradeLevel?: 2 | 3;
   title: string;
   islandName: string;
   theme: "parrot" | "forest" | "cave" | "shipwreck" | "coral" | "temple" | "castle" | "volcano" | "space" | "custom";
@@ -51,15 +49,89 @@ export interface IslandStory {
     badgeIcon: string;
     secretLore: string;
   };
-  isCustom?: boolean;
+}
+
+export interface WordPair {
+  id: string;
+  word: string;
+  target: string; // The matching synonym or antonym
+  type: "synonym" | "antonym";
+  gradeLevel: 2 | 3;
+  hint?: string;
+}
+
+// 1. Sınıf Etkinlik Tipleri
+export interface LetterBlendLevel {
+  id: string;
+  targetWord: string; // Syllable or word
+  displayHint: string;
+  imageEmoji: string;
+  letters: string[];
+  audioPhonetics?: string;
+  rewardCoins: number;
+}
+
+export interface SyllableWordLevel {
+  id: string;
+  targetWord: string;
+  syllables: string[];
+  imageEmoji: string;
+  hint: string;
+  rewardCoins: number;
+}
+
+export interface SentenceTrainLevel {
+  id: string;
+  sentenceWords: string[]; // in correct order
+  jumbledWords: string[];
+  imageEmoji: string;
+  rewardCoins: number;
+}
+
+export interface WordImageMatchLevel {
+  id: string;
+  targetWord: string;
+  options: { emoji: string; label: string; isCorrect: boolean }[];
+  rewardCoins: number;
+}
+
+// 1. Sınıf Okuma Metni & Metin Tamamlama (Cloze) Tipi
+export interface Grade1StoryClozeItem {
+  id: string;
+  sentenceWithBlank: string; // e.g. "Ali sabah erkenden bahçeye çıktı ve [___] sevdi."
+  targetWord: string; // The correct word to fill in
+  options: string[]; // e.g. ["tayı", "kuşu", "ağacı"]
+  explanation?: string;
+}
+
+export interface Grade1ReadingStory {
+  id: string;
+  levelNumber: number;
+  title: string;
+  iconEmoji: string;
+  readingText: string;
+  sentences: string[];
+  wordCount: number;
+  synopsis: string;
+  clozeItems: Grade1StoryClozeItem[];
+  rewardCoins: number;
 }
 
 export interface UserStats {
+  studentId: string;
   playerName: string;
+  gradeLevel: GradeLevel;
   avatarId: string;
   coins: number;
-  completedLevels: string[]; // Island IDs
-  unlockedGems: string[]; // Gem names
+  completedLevels: string[]; // Island IDs or Activity IDs
+  completedGrade1LetterLevels: string[]; // Hece Levels
+  completedGrade1SyllableLevels: string[]; // Kelime Levels
+  completedGrade1SentenceLevels: string[]; // Cümle Levels
+  completedGrade1ImageLevels: string[];
+  completedGrade1StoryLevels?: string[]; // 1. Sınıf Metin Tamamlama
+  completedSynonymGames: number;
+  completedAntonymGames: number;
+  unlockedGems: string[];
   earnedBadges: {
     id: string;
     title: string;
@@ -75,10 +147,16 @@ export interface UserStats {
   dyslexicFont: boolean;
   fontSize: "sm" | "base" | "lg" | "xl";
   soundEnabled: boolean;
+  lastActive: string;
 }
 
-export interface MascotSpeech {
-  message: string;
-  type: "welcome" | "hint" | "congrats" | "vocab" | "reading_tip";
-  title?: string;
+export interface StudentLeaderboardEntry {
+  studentId: string;
+  playerName: string;
+  gradeLevel: GradeLevel;
+  avatarId: string;
+  coins: number;
+  completedStoriesCount: number;
+  completedActivitiesCount: number;
+  lastActive: string;
 }

@@ -1,23 +1,27 @@
 import React from "react";
-import { Coins, Trophy, Sparkles, Volume2, VolumeX, User, MapPin, PlusCircle } from "lucide-react";
-import { UserStats } from "../types";
+import { Coins, Trophy, Sparkles, Volume2, VolumeX, Award, GraduationCap, User } from "lucide-react";
+import { UserStats, GradeLevel } from "../types";
 import { sounds } from "../utils/soundEffects";
 
 interface NavbarProps {
   stats: UserStats;
+  currentGrade: GradeLevel;
+  onSelectGrade: (grade: GradeLevel) => void;
   onOpenTrophyRoom: () => void;
-  onOpenAIGenerator: () => void;
+  onOpenTeacherDashboard: () => void;
   onOpenAvatarPicker: () => void;
-  onGoToMap: () => void;
-  currentView: "map" | "story" | "quiz" | "trophy";
+  onGoToDashboard: () => void;
+  currentView: "grade1" | "grade2" | "grade3" | "story" | "quiz" | "trophy" | "teacher" | "wordGame";
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   stats,
+  currentGrade,
+  onSelectGrade,
   onOpenTrophyRoom,
-  onOpenAIGenerator,
+  onOpenTeacherDashboard,
   onOpenAvatarPicker,
-  onGoToMap,
+  onGoToDashboard,
   currentView,
 }) => {
   const [isMuted, setIsMuted] = React.useState(sounds.isMuted());
@@ -27,92 +31,139 @@ export const Navbar: React.FC<NavbarProps> = ({
     setIsMuted(muted);
   };
 
+  const getAvatarEmoji = (id: string) => {
+    switch (id) {
+      case "girl_explorer":
+      case "girl":
+        return "👧";
+      case "boy_explorer":
+      case "boy":
+        return "👦";
+      case "owl":
+        return "🦉";
+      case "parrot":
+        return "🦜";
+      case "fox":
+        return "🦊";
+      case "mermaid":
+        return "🧜‍♀️";
+      case "wizard":
+        return "🧙‍♂️";
+      default:
+        return "🏴‍☠️";
+    }
+  };
+
   return (
-    <header className="sticky top-0 z-40 bg-amber-900/95 backdrop-blur border-b-4 border-amber-600 shadow-lg text-white">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-2">
-        {/* Brand & Map Button */}
+    <header className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b-4 border-amber-400 shadow-xl text-white">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 flex items-center justify-between gap-3">
+        {/* Brand */}
         <div className="flex items-center gap-3">
           <button
             id="nav-brand-button"
-            onClick={onGoToMap}
+            onClick={onGoToDashboard}
             className="flex items-center gap-2 text-left group focus:outline-none"
-            title="Haritaya Dön"
+            title="Ana Sayfaya Dön"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-yellow-600 flex items-center justify-center shadow-md border-2 border-amber-300 group-hover:scale-105 transition-transform">
-              <span className="text-xl" role="img" aria-label="pirate-flag">🏴‍☠️</span>
-            </div>
             <div>
-              <div className="text-sm sm:text-base font-bold text-amber-200 tracking-wide font-['Fredoka',sans-serif] flex items-center gap-1.5">
-                <span>3. Sınıf Hazine Avı</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-amber-700/80 text-amber-100 border border-amber-500/50 hidden md:inline-block">
-                  Okuma Anlama
+              <div className="text-base sm:text-xl font-black text-amber-400 tracking-tight flex items-center gap-2 font-mono">
+                <span className="hover:text-amber-300 transition-colors">rabiaöğretmen</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 hidden md:inline-block font-sans font-bold">
+                  Türkçe Portalı
                 </span>
               </div>
-              <p className="text-[11px] text-amber-300/80 hidden sm:block">Adaları keşfet, soruları çöz, sandığı aç!</p>
+              <p className="text-[11px] text-slate-400 hidden sm:block">
+                1., 2. ve 3. Sınıf Okuma & Kelime Oyunları
+              </p>
             </div>
           </button>
         </div>
 
-        {/* Action Controls & Stats */}
+        {/* Grade Selection Tabs in Navbar */}
+        <div className="flex items-center bg-slate-800 p-1 rounded-2xl border border-slate-700">
+          {[
+            { grade: 1 as GradeLevel, label: "1. Sınıf", icon: "🎒" },
+            { grade: 2 as GradeLevel, label: "2. Sınıf", icon: "⛵" },
+            { grade: 3 as GradeLevel, label: "3. Sınıf", icon: "🏆" },
+          ].map((item) => (
+            <button
+              key={item.grade}
+              onClick={() => onSelectGrade(item.grade)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
+                currentGrade === item.grade && currentView !== "teacher" && currentView !== "trophy"
+                  ? "bg-amber-400 text-slate-950 shadow-md scale-105"
+                  : "text-slate-300 hover:text-white"
+              }`}
+            >
+              <span>{item.icon}</span>
+              <span className="hidden sm:inline">{item.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Right Side Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* AI Magic Adventure Button */}
+          {/* Teacher Board Button */}
           <button
-            id="btn-open-ai-generator"
-            onClick={onOpenAIGenerator}
-            className="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 border border-purple-400/60 shadow-md text-xs sm:text-sm font-semibold flex items-center gap-1.5 text-white transition-all transform hover:scale-105 active:scale-95"
-            title="Kendi konunu seç ve yapay zeka ile yepyeni macera üret!"
+            id="btn-teacher-board"
+            onClick={onOpenTeacherDashboard}
+            className={`px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-black flex items-center gap-1.5 transition-all shadow ${
+              currentView === "teacher"
+                ? "bg-amber-400 text-slate-950 ring-2 ring-amber-300"
+                : "bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40"
+            }`}
+            title="Öğretmen Altın ve Skor Panosu"
           >
-            <Sparkles className="w-4 h-4 text-yellow-300 animate-spin-slow" />
-            <span className="hidden sm:inline">Sihirli Macera Üret</span>
-            <span className="sm:hidden">Yeni Ada</span>
+            <Award className="w-4 h-4 text-amber-400" />
+            <span className="hidden md:inline">Altın Skor Panosu</span>
+            <span className="md:hidden">Skorlar</span>
           </button>
 
-          {/* Gold Coins Pill */}
-          <div className="flex items-center gap-1.5 bg-amber-950/80 px-2.5 sm:px-3 py-1.5 rounded-xl border border-amber-500/40 shadow-inner">
-            <Coins className="w-4 h-4 text-yellow-400 fill-yellow-400 animate-bounce" />
-            <span className="text-xs sm:text-sm font-bold text-yellow-300 font-mono">{stats.coins}</span>
-            <span className="text-[10px] text-amber-300 hidden md:inline">Altın</span>
+          {/* Student Coins Badge */}
+          <div className="flex items-center gap-1.5 bg-slate-950 px-2.5 sm:px-3 py-1.5 rounded-xl border border-amber-400/40 shadow-inner">
+            <Coins className="w-4 h-4 text-amber-400 fill-amber-400 animate-bounce" />
+            <span className="text-xs sm:text-sm font-black text-amber-300 font-mono">
+              {stats.coins}
+            </span>
+            <span className="text-[10px] text-slate-400 hidden lg:inline">Altın</span>
           </div>
 
           {/* Trophy Room Button */}
           <button
             id="btn-trophy-room"
             onClick={onOpenTrophyRoom}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border transition-all text-xs sm:text-sm font-semibold ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border transition-all text-xs sm:text-sm font-bold ${
               currentView === "trophy"
-                ? "bg-amber-400 text-amber-950 border-yellow-300 shadow-md font-bold"
-                : "bg-amber-800/80 hover:bg-amber-700/80 text-amber-100 border-amber-600/50"
+                ? "bg-amber-400 text-slate-950 border-amber-300 shadow"
+                : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
             }`}
-            title="Hazine Odası ve Başarı Belgesi"
+            title="Hazine ve Rozet Odası"
           >
-            <Trophy className="w-4 h-4 text-yellow-400" />
-            <span className="hidden md:inline">Hazine Odası</span>
-            <span className="text-xs px-1.5 py-0.2 rounded-full bg-amber-900 text-amber-300 font-mono text-[11px]">
-              {stats.earnedBadges.length}/7
-            </span>
+            <Trophy className="w-4 h-4 text-amber-400" />
+            <span className="hidden lg:inline">Hazine Odası</span>
           </button>
 
-          {/* Player Avatar Pill */}
+          {/* Student Avatar / Profile */}
           <button
             id="btn-avatar-picker"
             onClick={onOpenAvatarPicker}
-            className="flex items-center gap-1.5 bg-amber-800/80 hover:bg-amber-700/90 px-2 sm:px-3 py-1.5 rounded-xl border border-amber-600/50 text-xs sm:text-sm font-medium transition-all"
-            title="Kaşif Profilini Değiştir"
+            className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 px-2.5 py-1.5 rounded-xl border border-slate-700 text-xs sm:text-sm font-bold transition-all"
+            title="Profil ve İsim Değiştir"
           >
-            <span className="text-base leading-none">
-              {stats.avatarId === "captain" ? "🏴‍☠️" : stats.avatarId === "girl" ? "👧" : stats.avatarId === "boy" ? "👦" : stats.avatarId === "mermaid" ? "🧜‍♀️" : "🦜"}
+            <span className="text-base leading-none">{getAvatarEmoji(stats.avatarId)}</span>
+            <span className="hidden xl:inline text-amber-200 max-w-[90px] truncate">
+              {stats.playerName}
             </span>
-            <span className="hidden lg:inline text-amber-200 max-w-[80px] truncate">{stats.playerName}</span>
           </button>
 
-          {/* Sound Toggle */}
+          {/* Sound Mute Toggle */}
           <button
             id="btn-toggle-sound"
             onClick={handleToggleMute}
-            className="p-2 rounded-xl bg-amber-800/60 hover:bg-amber-700/80 text-amber-200 border border-amber-600/40 transition-colors"
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-colors"
             title={isMuted ? "Sesi Aç" : "Sesi Kapat"}
           >
-            {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-300" />}
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
           </button>
         </div>
       </div>
