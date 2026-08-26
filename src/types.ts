@@ -60,7 +60,18 @@ export interface WordPair {
   hint?: string;
 }
 
-// 1. Sınıf Etkinlik Tipleri
+// 1. Sınıf Etkinlik Tipleri & Harf Grupları (Yeni Müfredat)
+export interface LetterGroupInfo {
+  groupNumber: 1 | 2 | 3 | 4 | 5;
+  name: string;
+  letters: string[];
+  allAvailableLetters: string[];
+  themeTitle: string;
+  badgeEmoji: string;
+  description: string;
+  colorClass: string;
+}
+
 export interface LetterBlendLevel {
   id: string;
   targetWord: string; // Syllable or word
@@ -69,6 +80,7 @@ export interface LetterBlendLevel {
   letters: string[];
   audioPhonetics?: string;
   rewardCoins: number;
+  letterGroup?: 1 | 2 | 3 | 4 | 5;
 }
 
 export interface SyllableWordLevel {
@@ -78,6 +90,7 @@ export interface SyllableWordLevel {
   imageEmoji: string;
   hint: string;
   rewardCoins: number;
+  letterGroup?: 1 | 2 | 3 | 4 | 5;
 }
 
 export interface SentenceTrainLevel {
@@ -86,6 +99,7 @@ export interface SentenceTrainLevel {
   jumbledWords: string[];
   imageEmoji: string;
   rewardCoins: number;
+  letterGroup?: 1 | 2 | 3 | 4 | 5;
 }
 
 export interface WordImageMatchLevel {

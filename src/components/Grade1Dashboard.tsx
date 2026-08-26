@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { UserStats, Grade1ReadingStory, Grade1StoryClozeItem } from "../types";
+import React, { useState, useMemo } from "react";
+import { UserStats, Grade1ReadingStory, Grade1StoryClozeItem, LetterGroupInfo } from "../types";
 import {
+  GRADE1_LETTER_GROUPS,
   GRADE1_HECE_LEVELS,
   GRADE1_KELIME_LEVELS,
   GRADE1_CUMLE_LEVELS,
@@ -24,8 +25,11 @@ import {
   RotateCcw,
   Award,
   ChevronRight,
+  ChevronLeft,
   Check,
   X,
+  Layers,
+  GraduationCap,
 } from "lucide-react";
 import confetti from "canvas-confetti";
 
@@ -44,25 +48,28 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<Grade1Tab>("hece");
 
-  // 1. HECE OLUŞTURMA STATE (Harfler Karışık)
+  // SEÇİLİ HARF GRUBU (1, 2, 3, 4, 5) - Yeni Müfredat Sıralaması
+  const [selectedGroupNum, setSelectedGroupNum] = useState<1 | 2 | 3 | 4 | 5>(1);
+
+  // 1. HECE OLUŞTURMA STATE
   const [heceIdx, setHeceIdx] = useState(0);
   const [placedLetters, setPlacedLetters] = useState<string[]>([]);
   const [pickedLetterIndices, setPickedLetterIndices] = useState<number[]>([]);
   const [heceFeedback, setHeceFeedback] = useState<"none" | "correct" | "wrong">("none");
 
-  // 2. KELİME OLUŞTURMA STATE (Heceler Karışık)
+  // 2. KELİME OLUŞTURMA STATE
   const [kelimeIdx, setKelimeIdx] = useState(0);
   const [placedSyllables, setPlacedSyllables] = useState<string[]>([]);
   const [pickedSyllableIndices, setPickedSyllableIndices] = useState<number[]>([]);
   const [kelimeFeedback, setKelimeFeedback] = useState<"none" | "correct" | "wrong">("none");
 
-  // 3. CÜMLE OLUŞTURMA STATE (Kelimeler Karışık)
+  // 3. CÜMLE OLUŞTURMA STATE
   const [cumleIdx, setCumleIdx] = useState(0);
   const [placedWords, setPlacedWords] = useState<string[]>([]);
   const [pickedWordIndices, setPickedWordIndices] = useState<number[]>([]);
   const [cumleFeedback, setCumleFeedback] = useState<"none" | "correct" | "wrong">("none");
 
-  // 4. METİNLER & METİN TAMAMLAMA STATE
+  // 4. METİNLER STATE
   const [selectedStory, setSelectedStory] = useState<Grade1ReadingStory | null>(
     GRADE1_READING_STORIES[0] || null
   );
@@ -84,7 +91,74 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
     }
   };
 
-  // Metinler bölümü kilit mantığı: Öğrencinin en az 50 altını veya tamamlanan etkinliği olması
+  // Aktif Harf Grubu Bilgisi
+  const activeGroupInfo = useMemo(() => {
+    return (
+      GRADE1_LETTER_GROUPS.find((g) => g.groupNumber === selectedGroupNum) ||
+      GRADE1_LETTER_GROUPS[0]
+    );
+  }, [selectedGroupNum]);
+
+  // Filtrelenmiş Seviyeler (Seçili Harf Grubuna Göre)
+  const currentGroupHeceLevels = useMemo(() => {
+    const filtered = GRADE1_HECE_LEVELS.filter((l) => l.letterGroup === selectedGroupNum);
+    return filtered.length > 0 ? filtered : GRADE1_HECE_LEVELS;
+  }, [selectedGroupNum]);
+
+  const currentGroupKelimeLevels = useMemo(() => {
+    const filtered = GRADE1_KELIME_LEVELS.filter((l) => l.letterGroup === selectedGroupNum);
+    return filtered.length > 0 ? filtered : GRADE1_KELIME_LEVELS;
+  }, [selectedGroupNum]);
+
+  const currentGroupCumleLevels = useMemo(() => {
+    const filtered = GRADE1_CUMLE_LEVELS.filter((l) => l.letterGroup === selectedGroupNum);
+    return filtered.length > 0 ? filtered : GRADE1_CUMLE_LEVELS;
+  }, [selectedGroupNum]);
+
+  // Harf Grubu Değiştirme
+  const handleSelectLetterGroup = (grpNum: 1 | 2 | 3 | 4 | 5) => {
+    setSelectedGroupNum(grpNum);
+    setHeceIdx(0);
+    setPlacedLetters([]);
+    setPickedLetterIndices([]);
+    setHeceFeedback("none");
+
+    setKelimeIdx(0);
+    setPlacedSyllables([]);
+    setPickedSyllableIndices([]);
+    setKelimeFeedback("none");
+
+    setCumleIdx(0);
+    setPlacedWords([]);
+    setPickedWordIndices([]);
+    setCumleFeedback("none");
+  };
+
+  // Harf Grubu İlerleme Durumu Hesaplama
+  const groupStats = useMemo(() => {
+    return GRADE1_LETTER_GROUPS.map((grp) => {
+      const heceInGrp = GRADE1_HECE_LEVELS.filter((l) => l.letterGroup === grp.groupNumber);
+      const kelimeInGrp = GRADE1_KELIME_LEVELS.filter((l) => l.letterGroup === grp.groupNumber);
+      const completedHece = heceInGrp.filter((l) =>
+        userStats.completedGrade1LetterLevels?.includes(l.id)
+      ).length;
+      const completedKelime = kelimeInGrp.filter((l) =>
+        userStats.completedGrade1SyllableLevels?.includes(l.id)
+      ).length;
+
+      const totalItems = heceInGrp.length + kelimeInGrp.length;
+      const completedItems = completedHece + completedKelime;
+
+      return {
+        ...grp,
+        totalItems,
+        completedItems,
+        percent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
+      };
+    });
+  }, [userStats]);
+
+  // Metinler kilit kontrolü
   const requiredCoinsForStories = 50;
   const isStoriesUnlocked =
     userStats.coins >= requiredCoinsForStories ||
@@ -94,9 +168,10 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
       2;
 
   // -------------------------------------------------------------
-  // 1. HECE OLUŞTURMA LOGIC (Harfler Karışık Verilir)
+  // 1. HECE OLUŞTURMA LOGIC
   // -------------------------------------------------------------
-  const currentHece = GRADE1_HECE_LEVELS[heceIdx] || GRADE1_HECE_LEVELS[0];
+  const currentHece =
+    currentGroupHeceLevels[heceIdx] || currentGroupHeceLevels[0] || GRADE1_HECE_LEVELS[0];
   const targetHece = currentHece.targetWord;
 
   const handlePickLetter = (letter: string, index: number) => {
@@ -137,11 +212,8 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
   };
 
   const handleRemovePlacedLetter = (indexToRemove: number) => {
-    const letterToRem = placedLetters[indexToRemove];
     const newPlaced = placedLetters.filter((_, i) => i !== indexToRemove);
-    const originalIndex = pickedLetterIndices[indexToRemove];
     const newPickedIndices = pickedLetterIndices.filter((_, i) => i !== indexToRemove);
-
     setPlacedLetters(newPlaced);
     setPickedLetterIndices(newPickedIndices);
     setHeceFeedback("none");
@@ -155,18 +227,36 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
 
   const handleNextHece = () => {
     handleResetHece();
-    setHeceIdx((prev) => (prev + 1) % GRADE1_HECE_LEVELS.length);
+    if (heceIdx < currentGroupHeceLevels.length - 1) {
+      setHeceIdx((prev) => prev + 1);
+    } else {
+      // Harf grubunun son hecesi bitince
+      if (selectedGroupNum < 5) {
+        confetti({ particleCount: 60, spread: 80, origin: { y: 0.5 } });
+        const nextGroup = (selectedGroupNum + 1) as 1 | 2 | 3 | 4 | 5;
+        handleSelectLetterGroup(nextGroup);
+      } else {
+        setHeceIdx(0);
+      }
+    }
+  };
+
+  const handlePrevHece = () => {
+    handleResetHece();
+    setHeceIdx((prev) => (prev > 0 ? prev - 1 : currentGroupHeceLevels.length - 1));
   };
 
   // -------------------------------------------------------------
-  // 2. KELİME OLUŞTURMA LOGIC (Heceler Karışık Verilir)
+  // 2. KELİME OLUŞTURMA LOGIC
   // -------------------------------------------------------------
-  const currentKelime = GRADE1_KELIME_LEVELS[kelimeIdx] || GRADE1_KELIME_LEVELS[0];
+  const currentKelime =
+    currentGroupKelimeLevels[kelimeIdx] ||
+    currentGroupKelimeLevels[0] ||
+    GRADE1_KELIME_LEVELS[0];
   const targetKelimeWord = currentKelime.targetWord;
-  // Hecelerin karışık hali
-  const shuffledSyllables = React.useMemo(() => {
+
+  const shuffledSyllables = useMemo(() => {
     const arr = [...currentKelime.syllables];
-    // Karıştır veya ters çevir
     return arr.length > 1 ? [...arr].reverse() : arr;
   }, [currentKelime]);
 
@@ -223,13 +313,31 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
 
   const handleNextKelime = () => {
     handleResetKelime();
-    setKelimeIdx((prev) => (prev + 1) % GRADE1_KELIME_LEVELS.length);
+    if (kelimeIdx < currentGroupKelimeLevels.length - 1) {
+      setKelimeIdx((prev) => prev + 1);
+    } else {
+      if (selectedGroupNum < 5) {
+        confetti({ particleCount: 60, spread: 80, origin: { y: 0.5 } });
+        const nextGroup = (selectedGroupNum + 1) as 1 | 2 | 3 | 4 | 5;
+        handleSelectLetterGroup(nextGroup);
+      } else {
+        setKelimeIdx(0);
+      }
+    }
+  };
+
+  const handlePrevKelime = () => {
+    handleResetKelime();
+    setKelimeIdx((prev) => (prev > 0 ? prev - 1 : currentGroupKelimeLevels.length - 1));
   };
 
   // -------------------------------------------------------------
-  // 3. CÜMLE OLUŞTURMA LOGIC (Kelimeler Karışık Verilir)
+  // 3. CÜMLE OLUŞTURMA LOGIC
   // -------------------------------------------------------------
-  const currentCumle = GRADE1_CUMLE_LEVELS[cumleIdx] || GRADE1_CUMLE_LEVELS[0];
+  const currentCumle =
+    currentGroupCumleLevels[cumleIdx] ||
+    currentGroupCumleLevels[0] ||
+    GRADE1_CUMLE_LEVELS[0];
   const targetSentence = currentCumle.sentenceWords.join(" ");
 
   const handlePickWord = (word: string, index: number) => {
@@ -285,11 +393,20 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
 
   const handleNextCumle = () => {
     handleResetCumle();
-    setCumleIdx((prev) => (prev + 1) % GRADE1_CUMLE_LEVELS.length);
+    if (cumleIdx < currentGroupCumleLevels.length - 1) {
+      setCumleIdx((prev) => prev + 1);
+    } else {
+      setCumleIdx(0);
+    }
+  };
+
+  const handlePrevCumle = () => {
+    handleResetCumle();
+    setCumleIdx((prev) => (prev > 0 ? prev - 1 : currentGroupCumleLevels.length - 1));
   };
 
   // -------------------------------------------------------------
-  // 4. 1. SINIF METİNLER & METİN TAMAMLAMA (CLOZE) LOGIC
+  // 4. METİNLER & CLOZE LOGIC
   // -------------------------------------------------------------
   const handleSelectStory = (story: Grade1ReadingStory) => {
     setSelectedStory(story);
@@ -319,7 +436,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
         [currentClozeItem.id]: option,
       }));
 
-      // Eğer son tamamlama sorusu ise
       if (selectedStory && clozeIdx === selectedStory.clozeItems.length - 1) {
         setIsStoryCompleted(true);
         confetti({ particleCount: 60, spread: 80, origin: { y: 0.6 } });
@@ -360,14 +476,14 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
         <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-2 border border-white/30">
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              1. Sınıf Türkçe Dünyası
+              <GraduationCap className="w-4 h-4 text-amber-300" />
+              1. Sınıf Yeni Müfredat Türkçe Dünyası
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
-              🎒 Hece, Kelime, Cümle & Metinler
+              🎒 Harf Gruplarına Göre Hece, Kelime ve Cümle
             </h1>
             <p className="text-emerald-100 text-sm sm:text-base font-medium mt-1 max-w-xl">
-              Harfleri birleştir hece yap, heceleri birleştir kelime kur, kelimeleri diz cümle oluştur ve altınlarınla 1. Sınıf masal metinlerini aç!
+              Öğrendiğin harflerle sırayla hece ve kelime oluştur! Öğrenmediğin harflerle karşılaşmazsın.
             </p>
           </div>
 
@@ -381,6 +497,90 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                 {userStats.coins} 💰
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ============================================================== */}
+      {/* YENİ MÜFREDAT HARF GRUBU SEÇİCİ BARI                           */}
+      {/* ============================================================== */}
+      <div className="bg-slate-900/90 border-2 border-emerald-500/30 rounded-3xl p-4 sm:p-6 shadow-xl space-y-3">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Layers className="w-5 h-5 text-amber-400" />
+            <h3 className="text-sm sm:text-base font-black text-white">
+              Müfredat Harf Grubu Sıralaması:
+            </h3>
+          </div>
+          <span className="text-xs text-emerald-300 font-medium bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30">
+            Kural: Sırayla hece & kelime kurulur
+          </span>
+        </div>
+
+        {/* 5 Harf Grubu Butonları */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {groupStats.map((grp) => {
+            const isSelected = selectedGroupNum === grp.groupNumber;
+            return (
+              <button
+                key={`group-btn-${grp.groupNumber}`}
+                onClick={() => handleSelectLetterGroup(grp.groupNumber as 1 | 2 | 3 | 4 | 5)}
+                className={`p-3.5 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${
+                  isSelected
+                    ? "bg-gradient-to-br " +
+                      grp.colorClass +
+                      " text-white border-white scale-[1.03] shadow-lg shadow-emerald-500/20"
+                    : "bg-slate-800/90 border-slate-700 hover:bg-slate-800 text-slate-300 hover:border-slate-500"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <div className="flex items-center gap-1.5 font-black text-xs sm:text-sm">
+                    <span>{grp.badgeEmoji}</span>
+                    <span>{grp.name}</span>
+                  </div>
+                  {isSelected && (
+                    <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-black uppercase">
+                      Aktif
+                    </span>
+                  )}
+                </div>
+
+                {/* Harfler */}
+                <div className="font-extrabold text-sm sm:text-base tracking-wider text-amber-300 drop-shadow mb-2">
+                  {grp.letters.join(" ")}
+                </div>
+
+                {/* İlerleme */}
+                <div className="w-full bg-slate-950/40 rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-amber-400 h-full rounded-full transition-all"
+                    style={{ width: `${grp.percent}%` }}
+                  />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Aktif Harf Grubu Özeti & Bilgi Notu */}
+        <div className="bg-slate-850 p-3.5 rounded-2xl border border-slate-750 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="font-bold text-slate-300">
+              Şu an öğrenilen harfler ({activeGroupInfo.allAvailableLetters.length} harf):
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {activeGroupInfo.allAvailableLetters.map((ltr, idx) => (
+                <span
+                  key={`avail-ltr-${idx}`}
+                  className="w-6 h-6 rounded-md bg-amber-400 text-slate-950 font-black flex items-center justify-center text-xs shadow-sm"
+                >
+                  {ltr}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="text-slate-400 font-medium">
+            {activeGroupInfo.description}
           </div>
         </div>
       </div>
@@ -450,21 +650,36 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
       </div>
 
       {/* ============================================================== */}
-      {/* 1. SEKMELİ OYUN: HECE OLUŞTURMA (Harfler Karışık)              */}
+      {/* 1. SEKMELİ OYUN: HECE OLUŞTURMA                                */}
       {/* ============================================================== */}
       {activeTab === "hece" && (
         <div className="bg-slate-900 border-2 border-amber-400/40 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
-          {/* Seviye Bilgisi */}
+          {/* Seviye Bilgisi & Navigasyon */}
           <div className="flex items-center justify-between max-w-xl mx-auto">
-            <span className="px-3.5 py-1.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold text-xs sm:text-sm">
-              Hece Seviyesi: {heceIdx + 1} / {GRADE1_HECE_LEVELS.length}
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Ödül:</span>
-              <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs">
-                +{currentHece.rewardCoins} Altın 💰
+            <button
+              onClick={handlePrevHece}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              title="Önceki Hece"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <div className="flex flex-col items-center">
+              <span className="px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/40 font-bold text-xs sm:text-sm">
+                {activeGroupInfo.badgeEmoji} {activeGroupInfo.name} • Hece {heceIdx + 1} / {currentGroupHeceLevels.length}
+              </span>
+              <span className="text-[11px] text-slate-400 mt-1">
+                Kullanılan Harfler: {activeGroupInfo.letters.join(", ")}
               </span>
             </div>
+
+            <button
+              onClick={handleNextHece}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              title="Sonraki Hece"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Görsel ve İpucu */}
@@ -553,7 +768,13 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                 onClick={handleNextHece}
                 className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base flex items-center gap-2 shadow-lg shadow-emerald-500/30 animate-bounce"
               >
-                <span>Sonraki Hece</span>
+                <span>
+                  {heceIdx < currentGroupHeceLevels.length - 1
+                    ? "Sonraki Hece"
+                    : selectedGroupNum < 5
+                    ? `Sonraki Harf Grubu (${selectedGroupNum + 1}. Grup) 👉`
+                    : "Başa Dön 🔄"}
+                </span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             )}
@@ -569,21 +790,36 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* 2. SEKMELİ OYUN: KELİME OLUŞTURMA (Heceler Karışık)           */}
+      {/* 2. SEKMELİ OYUN: KELİME OLUŞTURMA                             */}
       {/* ============================================================== */}
       {activeTab === "kelime" && (
         <div className="bg-slate-900 border-2 border-blue-400/40 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
-          {/* Seviye Bilgisi */}
+          {/* Seviye Bilgisi & Navigasyon */}
           <div className="flex items-center justify-between max-w-xl mx-auto">
-            <span className="px-3.5 py-1.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/40 font-bold text-xs sm:text-sm">
-              Kelime Seviyesi: {kelimeIdx + 1} / {GRADE1_KELIME_LEVELS.length}
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Ödül:</span>
-              <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs">
-                +{currentKelime.rewardCoins} Altın 💰
+            <button
+              onClick={handlePrevKelime}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              title="Önceki Kelime"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <div className="flex flex-col items-center">
+              <span className="px-3.5 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/40 font-bold text-xs sm:text-sm">
+                {activeGroupInfo.badgeEmoji} {activeGroupInfo.name} • Kelime {kelimeIdx + 1} / {currentGroupKelimeLevels.length}
+              </span>
+              <span className="text-[11px] text-slate-400 mt-1">
+                Kullanılan Harfler: {activeGroupInfo.letters.join(", ")}
               </span>
             </div>
+
+            <button
+              onClick={handleNextKelime}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              title="Sonraki Kelime"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Görsel ve İpucu */}
@@ -672,7 +908,13 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                 onClick={handleNextKelime}
                 className="px-6 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-base flex items-center gap-2 shadow-lg shadow-emerald-500/30 animate-bounce"
               >
-                <span>Sonraki Kelime</span>
+                <span>
+                  {kelimeIdx < currentGroupKelimeLevels.length - 1
+                    ? "Sonraki Kelime"
+                    : selectedGroupNum < 5
+                    ? `Sonraki Harf Grubu (${selectedGroupNum + 1}. Grup) 👉`
+                    : "Başa Dön 🔄"}
+                </span>
                 <ArrowRight className="w-5 h-5" />
               </button>
             )}
@@ -688,21 +930,33 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* 3. SEKMELİ OYUN: CÜMLE OLUŞTURMA (Kelimeler Karışık)           */}
+      {/* 3. SEKMELİ OYUN: CÜMLE OLUŞTURMA                              */}
       {/* ============================================================== */}
       {activeTab === "cumle" && (
         <div className="bg-slate-900 border-2 border-purple-400/40 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-xl relative overflow-hidden">
-          {/* Seviye Bilgisi */}
+          {/* Seviye Bilgisi & Navigasyon */}
           <div className="flex items-center justify-between max-w-xl mx-auto">
-            <span className="px-3.5 py-1.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/40 font-bold text-xs sm:text-sm">
-              Cümle Treni: {cumleIdx + 1} / {GRADE1_CUMLE_LEVELS.length}
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">Ödül:</span>
-              <span className="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs">
-                +{currentCumle.rewardCoins} Altın 💰
+            <button
+              onClick={handlePrevCumle}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              title="Önceki Cümle"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <div className="flex flex-col items-center">
+              <span className="px-3.5 py-1.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-400/40 font-bold text-xs sm:text-sm">
+                {activeGroupInfo.badgeEmoji} {activeGroupInfo.name} • Cümle Treni: {cumleIdx + 1} / {currentGroupCumleLevels.length}
               </span>
             </div>
+
+            <button
+              onClick={handleNextCumle}
+              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
+              title="Sonraki Cümle"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Görsel */}
@@ -806,7 +1060,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
       {/* ============================================================== */}
       {activeTab === "metinler" && (
         <div className="space-y-6">
-          {/* Eğer henüz kilit açılmamışsa Kilit Bilgi Kartı Göster */}
           {!isStoriesUnlocked ? (
             <div className="bg-slate-900 border-4 border-amber-400/50 rounded-3xl p-8 text-center space-y-5 shadow-2xl max-w-2xl mx-auto">
               <div className="w-20 h-20 mx-auto rounded-3xl bg-amber-500/20 border-2 border-amber-400/40 flex items-center justify-center text-4xl text-amber-400 animate-pulse">
@@ -821,7 +1074,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                 </p>
               </div>
 
-              {/* İlerleme Çubuğu */}
               <div className="max-w-md mx-auto bg-slate-800 p-4 rounded-2xl border border-slate-700 space-y-2">
                 <div className="flex justify-between text-xs font-bold text-slate-300">
                   <span>Altın İlerlemesi</span>
@@ -849,7 +1101,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
               </div>
             </div>
           ) : (
-            /* Kilit Açık: 1. Sınıf Metinler ve Metin Tamamlama */
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Sol: Metin Listesi */}
               <div className="lg:col-span-4 space-y-3">
@@ -896,10 +1147,9 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                 </div>
               </div>
 
-              {/* Sağ: Seçili Metin ve Okuma / Metin Tamamlama Alanı */}
+              {/* Sağ: Seçili Metin */}
               {selectedStory && (
                 <div className="lg:col-span-8 bg-slate-900 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xl">
-                  {/* Başlık ve Mod Değiştirici */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
                     <div className="flex items-center gap-3">
                       <div className="text-4xl sm:text-5xl">{selectedStory.iconEmoji}</div>
@@ -913,7 +1163,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                       </div>
                     </div>
 
-                    {/* Okuma & Metin Tamamlama Butonları */}
                     <div className="flex items-center bg-slate-800 p-1 rounded-xl border border-slate-700 w-full sm:w-auto">
                       <button
                         onClick={() => setStoryMode("read")}
@@ -936,7 +1185,7 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                         }`}
                       >
                         <Sparkles className="w-4 h-4" />
-                        Metin Tamamlama Oyunu
+                        Metin Tamamlama
                       </button>
                     </div>
                   </div>
@@ -968,11 +1217,10 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                     </div>
                   )}
 
-                  {/* 2. MOD: METİN TAMAMLAMA (CLOZE / BOŞLUK DOLDURMA) */}
+                  {/* 2. MOD: METİN TAMAMLAMA */}
                   {storyMode === "cloze" && (
                     <div className="space-y-6">
                       {isStoryCompleted ? (
-                        /* Tamamlama Başarı Ekranı */
                         <div className="text-center py-8 space-y-4 bg-emerald-950/40 border-2 border-emerald-400/40 rounded-2xl p-6">
                           <div className="text-6xl animate-bounce">🏆</div>
                           <h3 className="text-2xl font-black text-white">
@@ -1011,9 +1259,7 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                           </div>
                         </div>
                       ) : currentClozeItem ? (
-                        /* Aktif Boşluk Doldurma Sorusu */
                         <div className="space-y-6">
-                          {/* İlerleme */}
                           <div className="flex items-center justify-between text-xs font-bold text-slate-400">
                             <span>
                               Boşluk {clozeIdx + 1} / {selectedStory.clozeItems.length}
@@ -1023,7 +1269,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                             </span>
                           </div>
 
-                          {/* Cümle ve Boşluk */}
                           <div className="bg-slate-800 p-6 rounded-2xl border-2 border-amber-400/40 text-center space-y-4">
                             <div className="text-lg sm:text-2xl font-bold text-white leading-relaxed">
                               {currentClozeItem.sentenceWithBlank.split("_____").map((part, i, arr) => (
@@ -1049,7 +1294,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                             </button>
                           </div>
 
-                          {/* Seçenek Butonları */}
                           <div>
                             <div className="text-xs text-slate-400 uppercase font-black tracking-wider mb-3 text-center">
                               Boşluğa Hangi Kelime Gelmeli?
@@ -1077,7 +1321,6 @@ export const Grade1Dashboard: React.FC<Grade1DashboardProps> = ({
                             </div>
                           </div>
 
-                          {/* Geri Bildirim ve Sonraki Butonu */}
                           {clozeFeedback === "correct" && (
                             <div className="bg-emerald-950/60 border border-emerald-400 p-4 rounded-xl flex items-center justify-between animate-fadeIn">
                               <div className="flex items-center gap-2 text-emerald-300 font-bold text-sm">
