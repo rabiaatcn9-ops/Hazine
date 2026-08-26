@@ -54,10 +54,10 @@ export const Grade2Dashboard: React.FC<Grade2DashboardProps> = ({
               2. Sınıf Türkçe & Okuma Dünyası
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
-              ⛵ 150 Okuma Metni ve Kelime Oyunları
+              ⛵ Okuma Metinleri ve Kelime Oyunları
             </h1>
             <p className="text-blue-100 text-sm sm:text-base mt-2 max-w-2xl">
-              2. sınıf seviyesine özel 150 eğitici okuma anlama metni, zıt anlamlı ve eş anlamlı
+              2. sınıf seviyesine özel eğitici okuma anlama metinleri, zıt anlamlı ve eş anlamlı
               kelimeler eşleştirme oyunlarıyla hazineleri topla!
             </p>
           </div>
@@ -66,7 +66,7 @@ export const Grade2Dashboard: React.FC<Grade2DashboardProps> = ({
             <div>
               <div className="text-xs font-bold text-blue-200">Okunan Metinler</div>
               <div className="text-2xl font-black text-amber-300">
-                {completedCount} / 150
+                {completedCount} / {GRADE2_STORIES.length}
               </div>
               <div className="text-[11px] text-blue-100">Tamamlanan Seviye</div>
             </div>
@@ -83,7 +83,7 @@ export const Grade2Dashboard: React.FC<Grade2DashboardProps> = ({
 
       {/* 3 Major Activities Hub */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Activity 1: 150 Stories */}
+        {/* Activity 1: Stories */}
         <button
           onClick={() => setViewMode("stories")}
           className={`p-6 rounded-3xl border-3 text-left transition-all relative group shadow-md ${
@@ -95,13 +95,13 @@ export const Grade2Dashboard: React.FC<Grade2DashboardProps> = ({
           <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-4 text-2xl group-hover:scale-110 transition-transform">
             📚
           </div>
-          <div className="font-black text-lg text-slate-900">150 Okuma Metni</div>
+          <div className="font-black text-lg text-slate-900">Okuma Metinleri</div>
           <div className="text-xs font-bold text-slate-500 mt-1">
             5N1K soruları, sözcük sandığı ve ödül sandıkları
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg">
-              {completedCount} / 150 Tamamlandı
+              {completedCount} / {GRADE2_STORIES.length} Tamamlandı
             </span>
             <ChevronRight className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" />
           </div>
@@ -148,13 +148,13 @@ export const Grade2Dashboard: React.FC<Grade2DashboardProps> = ({
         </button>
       </div>
 
-      {/* 150 Stories Section */}
+      {/* Stories Section */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-4 border-slate-100 space-y-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-blue-600" />
-              2. Sınıf Hazine Haritası (150 Metin)
+              2. Sınıf Okuma Metinleri ve Hazine Haritası
             </h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">
               İstediğin metni seç, oku, 5N1K sorularını yanıtla ve altın sandıklarını aç!

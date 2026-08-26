@@ -53,10 +53,10 @@ export const Grade3Dashboard: React.FC<Grade3DashboardProps> = ({
               3. Sınıf Türkçe & Okuma Dünyası
             </div>
             <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
-              🏆 150 Okuma Metni ve Kelime Hazinesi
+              🏆 Okuma Metinleri ve Kelime Hazinesi
             </h1>
             <p className="text-indigo-100 text-sm sm:text-base mt-2 max-w-2xl">
-              3. sınıf seviyesine özel 150 kapsamlı 5N1K okuma anlama metni, zengin kelime dağarcığı,
+              3. sınıf seviyesine özel kapsamlı 5N1K okuma anlama metinleri, zengin kelime dağarcığı,
               zıt anlamlı ve eş anlamlı kelime eşleştirme maceraları!
             </p>
           </div>
@@ -65,7 +65,7 @@ export const Grade3Dashboard: React.FC<Grade3DashboardProps> = ({
             <div>
               <div className="text-xs font-bold text-indigo-200">Okunan Metinler</div>
               <div className="text-2xl font-black text-amber-300">
-                {completedCount} / 150
+                {completedCount} / {GRADE3_STORIES.length}
               </div>
               <div className="text-[11px] text-indigo-100">Tamamlanan Seviye</div>
             </div>
@@ -82,18 +82,18 @@ export const Grade3Dashboard: React.FC<Grade3DashboardProps> = ({
 
       {/* 3 Major Activities Hub */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Activity 1: 150 Stories */}
+        {/* Activity 1: Stories */}
         <div className="p-6 rounded-3xl bg-white border-3 border-indigo-400 shadow-md">
           <div className="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center mb-4 text-2xl">
             📚
           </div>
-          <div className="font-black text-lg text-slate-900">150 Okuma Metni</div>
+          <div className="font-black text-lg text-slate-900">Okuma Metinleri</div>
           <div className="text-xs font-bold text-slate-500 mt-1">
             Derin anlama, 5N1K, ana fikir ve sözcük dedektifliği
           </div>
           <div className="mt-4 flex items-center justify-between">
             <span className="text-xs font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
-              {completedCount} / 150 Tamamlandı
+              {completedCount} / {GRADE3_STORIES.length} Tamamlandı
             </span>
           </div>
         </div>
@@ -139,13 +139,13 @@ export const Grade3Dashboard: React.FC<Grade3DashboardProps> = ({
         </button>
       </div>
 
-      {/* 150 Stories Section */}
+      {/* Stories Section */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border-4 border-slate-100 space-y-6">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-indigo-600" />
-              3. Sınıf Hazine Haritası (150 Metin)
+              3. Sınıf Okuma Metinleri ve Hazine Haritası
             </h2>
             <p className="text-xs text-slate-500 font-semibold mt-1">
               Hikayeyi dikkatlice oku, 4 şıklı soruları yanıtla ve büyük şampiyonluk rozetlerini kazan!

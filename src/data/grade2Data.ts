@@ -88,7 +88,7 @@ export const GRADE2_SYNONYMS: WordPair[] = [
   { id: "g2-syn-40", word: "SONBAHAR", target: "GÜZ", type: "synonym", gradeLevel: 2, hint: "Yaprakların sararıp döküldüğü mevsim" },
 ];
 
-// 2. SINIF SEVİYESİ İÇİN 150 ZENGİN OKUMA ANLAMA METNİ ÜRETİCİSİ
+// 2. SINIF SEVİYESİ İÇİN 300 ZENGİN OKUMA ANLAMA METNİ ÜRETİCİSİ
 // 70 - 130 kelime arası, 5N1K soruları, sözlük ve altın ödülleri
 const GRADE2_TOPIC_TEMPLATES = [
   { title: "Minik Kuş Pırpır ve İlk Uçuş", theme: "forest" as const, hero: "Minik Kuş Pırpır", obj: "yüksek meşe ağacı", lesson: "Cesaret ve çalışkanlık başarı getirir.", newWord: "Kanat Çırpmak", meaning: "Uçmak için kanatları hızla hareket ettirmek." },
@@ -100,13 +100,22 @@ const GRADE2_TOPIC_TEMPLATES = [
   { title: "Tavşan Zıpzıp'ın Havuç Tarlası", theme: "forest" as const, hero: "Tavşan Zıpzıp", obj: "çıtır çıtır havuçlar", lesson: "Sağlıklı beslenmek bizi zinde ve güçlü yapar.", newWord: "Zinde", meaning: "Sağlam, dinç ve enerjik." },
   { title: "Efe'nin Gökyüzü Dürbünü", theme: "space" as const, hero: "Meraklı Efe", obj: "yıldızlı gece gökyüzü", lesson: "Merak etmek bilimin ve öğrenmenin ilk adımıdır.", newWord: "Gözlem", meaning: "Bir şeyi dikkatlice izleyip inceleme." },
   { title: "Deniz Fenerinin Parlayan Işığı", theme: "shipwreck" as const, hero: "Bekçi Dede", obj: "eski deniz feneri", lesson: "İyilik yapmak karanlıkta yol gösteren bir fener gibidir.", newWord: "Kılavuz", meaning: "Doğru yolu gösteren rehber." },
-  { title: "Sevimli Kedi Pamuk'un Yumak Oyunu", theme: "castle" as const, hero: "Kedi Pamuk", obj: "renkli yün yumağı", lesson: "Oyun oynamak bizi mutlu ve neşeli kılar.", newWord: "Mırıldamak", meaning: "Kedilerin mutlu olduğunda çıkardığı tatlı ses." }
+  { title: "Sevimli Kedi Pamuk'un Yumak Oyunu", theme: "castle" as const, hero: "Kedi Pamuk", obj: "renkli yün yumağı", lesson: "Oyun oynamak bizi mutlu ve neşeli kılar.", newWord: "Mırıldamak", meaning: "Kedilerin mutlu olduğunda çıkardığı tatlı ses." },
+  { title: "Kaplumbağa Tonton'un Sabır Dersi", theme: "forest" as const, hero: "Kaplumbağa Tonton", obj: "yeşil tepe yolu", lesson: "Sabırla adım atan hedefine mutlaka ulaşır.", newWord: "Sebat", meaning: "Bir işte yılmadan kararlılıkla devam etmek." },
+  { title: "Orman Dedektifi Tilki Kurnaz", theme: "forest" as const, hero: "Tilki Kurnaz", obj: "esrarengiz ayak izleri", lesson: "Dürüstlük ve dikkat her gizemi aydınlatır.", newWord: "İpucu", meaning: "Bir gerçeğe ulaşmayı sağlayan küçük işaret." },
+  { title: "Robot Dostum Çipçip", theme: "space" as const, hero: "Robot Çipçip", obj: "laboratuvar atölyesi", lesson: "Teknoloji insanlara yardım için kullanıldığında değerlidir.", newWord: "Mucit", meaning: "Yeni bir alet veya buluş geliştiren kişi." },
+  { title: "Günebakan Tarlasının Sırrı", theme: "forest" as const, hero: "Günebakan Çiçeği", obj: "güneş ışınları", lesson: "Her zaman aydınlığa ve iyiliğe yönelmeliyiz.", newWord: "Günebakan", meaning: "Yüzünü daima güneşe dönen sarı ayçiçeği." },
+  { title: "Yaşlı Çınar Ağacının Masalı", theme: "forest" as const, hero: "Ulu Çınar", obj: "derin kökler", lesson: "Büyüklerimizin tecrübe ve öğütleri paha biçilemezdir.", newWord: "Ulu", meaning: "Çok yüce, saygın ve görkemli." },
+  { title: "Deniz Kabuğu Melodisi", theme: "coral" as const, hero: "Küçük Deniz Kızı", obj: "sedefli deniz kabuğu", lesson: "Doğanın sesini dinlemek kalbe huzur verir.", newWord: "Melodi", meaning: "Kulağa hoş gelen müziksel ezgi." },
+  { title: "Cesur Dağ Keçisi Kıvırcık", theme: "castle" as const, hero: "Keçi Kıvırcık", obj: "sarp kayalıklar", lesson: "Zorluklar karşısında cesur ve dikkatli olmalıyız.", newWord: "Sarp", meaning: "Çıkılması güç, dik ve yalçın yer." },
+  { title: "Rengarenk Uçan Balon", theme: "parrot" as const, hero: "Rüzgar Kuşu", obj: "kırmızı uçan balon", lesson: "Yüksek hedeflere ulaşmak hayal etmekle başlar.", newWord: "Süzülmek", meaning: "Havadayken kanat çırpmadan kayarcasına uçmak." },
+  { title: "Gökkuşağı Şelalesi", theme: "coral" as const, hero: "Balık Parlak", obj: "köpüklü şelale", lesson: "Farklılıklar dünyamıza eşsiz güzellik ve renk katar.", newWord: "Şelale", meaning: "Yüksekten dökülen coşkulu su akıntısı." },
+  { title: "Kütüphane Perisi ve Gizli Kitap", theme: "castle" as const, hero: "Kitap Kurdu Can", obj: "altın yaldızlı kitap", lesson: "Kitap okumak hayal gücümüzün kanatlarıdır.", newWord: "Yaldız", meaning: "Eşyaların üzerine sürülen parlak altın sarısı süs." }
 ];
 
-export const GRADE2_STORIES: IslandStory[] = Array.from({ length: 150 }, (_, i) => {
+export const GRADE2_STORIES: IslandStory[] = Array.from({ length: 300 }, (_, i) => {
   const levelNum = i + 1;
   const tpl = GRADE2_TOPIC_TEMPLATES[i % GRADE2_TOPIC_TEMPLATES.length];
-  const storyNumber = levelNum;
 
   const title = levelNum <= GRADE2_TOPIC_TEMPLATES.length
     ? tpl.title
