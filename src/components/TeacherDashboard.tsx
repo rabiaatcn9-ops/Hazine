@@ -110,6 +110,7 @@ export const TeacherDashboard: React.FC<TeacherDashboardProps> = ({
             { id: 1, label: "🎒 1. Sınıflar" },
             { id: 2, label: "⛵ 2. Sınıflar" },
             { id: 3, label: "🏆 3. Sınıflar" },
+            { id: 4, label: "⚡ 4. Sınıflar" },
           ].map((tab) => (
             <button
               key={String(tab.id)}

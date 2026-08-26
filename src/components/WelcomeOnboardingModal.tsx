@@ -87,17 +87,18 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
               <GraduationCap className="w-4 h-4 text-amber-600" />
               Sınıf Seviyeni Seç:
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
               {[
                 { level: 1 as GradeLevel, title: "1. Sınıf", desc: "Hece, Kelime & Metinler", color: "border-emerald-500 bg-emerald-50 text-emerald-900", icon: "🎒" },
                 { level: 2 as GradeLevel, title: "2. Sınıf", desc: "150 Metin + Kelime", color: "border-blue-500 bg-blue-50 text-blue-900", icon: "⛵" },
                 { level: 3 as GradeLevel, title: "3. Sınıf", desc: "150 Metin + Kelime", color: "border-indigo-500 bg-indigo-50 text-indigo-900", icon: "🏆" },
+                { level: 4 as GradeLevel, title: "4. Sınıf", desc: "Hızlı Okuma & Anlama", color: "border-purple-500 bg-purple-50 text-purple-900", icon: "⚡" },
               ].map((g) => (
                 <button
                   key={g.level}
                   type="button"
                   onClick={() => setGrade(g.level)}
-                  className={`p-3.5 rounded-2xl border-3 text-left transition-all relative ${
+                  className={`p-3 rounded-2xl border-2 text-left transition-all relative ${
                     grade === g.level
                       ? `${g.color} ring-4 ring-amber-300 shadow-md scale-105`
                       : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
@@ -105,7 +106,7 @@ export const WelcomeOnboardingModal: React.FC<WelcomeOnboardingModalProps> = ({
                 >
                   <div className="text-2xl mb-1">{g.icon}</div>
                   <div className="font-black text-sm">{g.title}</div>
-                  <div className="text-[11px] font-semibold opacity-80 leading-tight">{g.desc}</div>
+                  <div className="text-[10px] font-semibold opacity-80 leading-tight">{g.desc}</div>
                   {grade === g.level && (
                     <CheckCircle2 className="w-4 h-4 text-amber-600 absolute top-2 right-2" />
                   )}

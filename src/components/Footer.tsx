@@ -3,7 +3,7 @@ import { Sparkles, Heart, GraduationCap, Award, BookOpen } from "lucide-react";
 
 interface FooterProps {
   onOpenTeacherBoard?: () => void;
-  onSelectGrade?: (grade: 1 | 2 | 3) => void;
+  onSelectGrade?: (grade: 1 | 2 | 3 | 4) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onOpenTeacherBoard, onSelectGrade }) => {
@@ -24,7 +24,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenTeacherBoard, onSelectGrad
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-1">
-                1., 2. ve 3. Sınıflar İçin Okuma Anlama, Hece, Kelime, Cümle ve Kelime Oyunları
+                1., 2., 3. ve 4. Sınıflar İçin Okuma Anlama, Hece-Kelime Oyunları & 4. Sınıf Hızlı Okuma Egzersizleri
               </p>
             </div>
           </div>
@@ -35,19 +35,25 @@ export const Footer: React.FC<FooterProps> = ({ onOpenTeacherBoard, onSelectGrad
               onClick={() => onSelectGrade?.(1)}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white text-xs font-bold text-slate-300 transition-colors flex items-center gap-1.5 border border-slate-700"
             >
-              🎒 1. Sınıf Dünyası
+              🎒 1. Sınıf
             </button>
             <button
               onClick={() => onSelectGrade?.(2)}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-blue-600 hover:text-white text-xs font-bold text-slate-300 transition-colors flex items-center gap-1.5 border border-slate-700"
             >
-              ⛵ 2. Sınıf (150 Metin + Kelimeler)
+              ⛵ 2. Sınıf
             </button>
             <button
               onClick={() => onSelectGrade?.(3)}
               className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-indigo-600 hover:text-white text-xs font-bold text-slate-300 transition-colors flex items-center gap-1.5 border border-slate-700"
             >
-              🏆 3. Sınıf (150 Metin + Kelimeler)
+              🏆 3. Sınıf
+            </button>
+            <button
+              onClick={() => onSelectGrade?.(4)}
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-purple-600 hover:text-white text-xs font-bold text-slate-300 transition-colors flex items-center gap-1.5 border border-slate-700"
+            >
+              ⚡ 4. Sınıf Hızlı Okuma
             </button>
             <button
               onClick={onOpenTeacherBoard}

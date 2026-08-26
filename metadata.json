@@ -1,6 +1,6 @@
 {
   "name": "3. Sınıf Hazine Avı: Okuma Anlama ve Yazar Kaşif",
-  "description": "Rabia Öğretmen ilkokul 1., 2. ve 3. sınıflar için okuma anlama, harf-hece-kelime-cümle birleştirme oyunları, 150'şer okuma metni ve zıt/eş anlamlı kelimeler eşleştirme platformu.",
+  "description": "Rabia Öğretmen ilkokul 1., 2., 3. ve 4. sınıflar için okuma anlama, hece-kelime-cümle birleştirme, 4. sınıf hızlı ve süreli okuma çalışmaları, takistoskop ve zıt/eş anlamlı kelimeler eşleştirme platformu.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

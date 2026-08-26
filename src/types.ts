@@ -1,4 +1,4 @@
-export type GradeLevel = 1 | 2 | 3;
+export type GradeLevel = 1 | 2 | 3 | 4;
 
 export type QuestionType = "multiple_choice" | "true_false" | "ordering" | "cloze";
 
@@ -22,7 +22,7 @@ export interface VocabularyWord {
 export interface IslandStory {
   id: string;
   levelNumber: number;
-  gradeLevel?: 2 | 3;
+  gradeLevel?: 2 | 3 | 4;
   title: string;
   islandName: string;
   theme: "parrot" | "forest" | "cave" | "shipwreck" | "coral" | "temple" | "castle" | "volcano" | "space" | "custom";
@@ -56,7 +56,7 @@ export interface WordPair {
   word: string;
   target: string; // The matching synonym or antonym
   type: "synonym" | "antonym";
-  gradeLevel: 2 | 3;
+  gradeLevel: 2 | 3 | 4;
   hint?: string;
 }
 
@@ -117,6 +117,42 @@ export interface Grade1ReadingStory {
   rewardCoins: number;
 }
 
+// 4. Sınıf Hızlı Okuma & Süreli Okuma Tipleri
+export interface Grade4TimedStory {
+  id: string;
+  levelNumber: number;
+  title: string;
+  category: "Bilim & Uzay" | "Tarih & Keşif" | "Doğa & Çevre" | "Macera & Gizem" | "Teknoloji & Yapay Zeka" | "Edebiyat & Sanat";
+  iconEmoji: string;
+  synopsis: string;
+  wordCount: number;
+  targetSecondsStandard: number; // 60-90s
+  targetSecondsSpeedMaster: number; // 35-50s
+  paragraphs: string[];
+  vocabulary: VocabularyWord[];
+  questions: Question[];
+  rewardCoins: number;
+  difficulty: "Kolay" | "Orta" | "Usta";
+}
+
+export interface Grade4TachistoscopeItem {
+  id: string;
+  targetWordOrPhrase: string;
+  distractors: string[];
+  displayDurationMs: number; // e.g. 250ms, 180ms, 120ms
+  category: string;
+  rewardCoins: number;
+}
+
+export interface Grade4PyramidExercise {
+  id: string;
+  title: string;
+  description: string;
+  focusPointEmoji: string;
+  lines: { leftWord: string; centerSymbol: string; rightWord: string }[];
+  rewardCoins: number;
+}
+
 export interface UserStats {
   studentId: string;
   playerName: string;
@@ -129,6 +165,11 @@ export interface UserStats {
   completedGrade1SentenceLevels: string[]; // Cümle Levels
   completedGrade1ImageLevels: string[];
   completedGrade1StoryLevels?: string[]; // 1. Sınıf Metin Tamamlama
+  completedGrade4TimedStories?: string[]; // 4. Sınıf Süreli Okuma Metinleri
+  completedGrade4TachistoscopeCount?: number; // 4. Sınıf Takistoskop tamamlanma
+  completedGrade4RsvpCount?: number; // 4. Sınıf Kayan Kelime
+  completedGrade4PyramidCount?: number; // 4. Sınıf Piramit
+  bestGrade4Wpm?: number; // Öğrencinin en yüksek WPM skoru
   completedSynonymGames: number;
   completedAntonymGames: number;
   unlockedGems: string[];

@@ -19,7 +19,7 @@ import {
 import confetti from "canvas-confetti";
 
 interface WordMatchingGameProps {
-  gradeLevel: 2 | 3;
+  gradeLevel: 2 | 3 | 4;
   modeType: "synonym" | "antonym";
   userStats: UserStats;
   onUpdateStats: (updater: (prev: UserStats) => UserStats) => void;

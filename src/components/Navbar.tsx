@@ -11,7 +11,7 @@ interface NavbarProps {
   onOpenTeacherDashboard: () => void;
   onOpenAvatarPicker: () => void;
   onGoToDashboard: () => void;
-  currentView: "grade1" | "grade2" | "grade3" | "story" | "quiz" | "trophy" | "teacher" | "wordGame";
+  currentView: "grade1" | "grade2" | "grade3" | "grade4" | "story" | "quiz" | "trophy" | "teacher" | "wordGame";
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -73,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 hidden sm:block">
-                1., 2. ve 3. Sınıf Okuma & Kelime Oyunları
+                1., 2., 3. ve 4. Sınıf Okuma & Hızlı Okuma Oyunları
               </p>
             </div>
           </button>
@@ -85,11 +85,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             { grade: 1 as GradeLevel, label: "1. Sınıf", icon: "🎒" },
             { grade: 2 as GradeLevel, label: "2. Sınıf", icon: "⛵" },
             { grade: 3 as GradeLevel, label: "3. Sınıf", icon: "🏆" },
+            { grade: 4 as GradeLevel, label: "4. Sınıf", icon: "⚡" },
           ].map((item) => (
             <button
               key={item.grade}
               onClick={() => onSelectGrade(item.grade)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
+              className={`px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1 ${
                 currentGrade === item.grade && currentView !== "teacher" && currentView !== "trophy"
                   ? "bg-amber-400 text-slate-950 shadow-md scale-105"
                   : "text-slate-300 hover:text-white"

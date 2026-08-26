@@ -4,6 +4,7 @@ import { Footer } from "./components/Footer";
 import { Grade1Dashboard } from "./components/Grade1Dashboard";
 import { Grade2Dashboard } from "./components/Grade2Dashboard";
 import { Grade3Dashboard } from "./components/Grade3Dashboard";
+import { Grade4Dashboard } from "./components/Grade4Dashboard";
 import { WordMatchingGame } from "./components/WordMatchingGame";
 import { StoryReader } from "./components/StoryReader";
 import { QuizGame } from "./components/QuizGame";
@@ -33,6 +34,11 @@ const DEFAULT_STATS: UserStats = {
   completedGrade1SyllableLevels: [],
   completedGrade1SentenceLevels: [],
   completedGrade1ImageLevels: [],
+  completedGrade4TimedStories: [],
+  completedGrade4TachistoscopeCount: 0,
+  completedGrade4RsvpCount: 0,
+  completedGrade4PyramidCount: 0,
+  bestGrade4Wpm: 0,
   completedSynonymGames: 0,
   completedAntonymGames: 0,
   unlockedGems: [],
@@ -66,9 +72,12 @@ export default function App() {
 
   const [currentGrade, setCurrentGrade] = useState<GradeLevel>(stats.gradeLevel || 2);
   const [currentView, setCurrentView] = useState<
-    "grade1" | "grade2" | "grade3" | "story" | "quiz" | "trophy" | "teacher" | "wordGame"
+    "grade1" | "grade2" | "grade3" | "grade4" | "story" | "quiz" | "trophy" | "teacher" | "wordGame"
   >(() => {
-    return stats.gradeLevel === 1 ? "grade1" : stats.gradeLevel === 3 ? "grade3" : "grade2";
+    if (stats.gradeLevel === 1) return "grade1";
+    if (stats.gradeLevel === 3) return "grade3";
+    if (stats.gradeLevel === 4) return "grade4";
+    return "grade2";
   });
 
   // Active story and quiz states
@@ -100,6 +109,10 @@ export default function App() {
         userStats.completedGrade1SyllableLevels.length +
         userStats.completedGrade1SentenceLevels.length +
         userStats.completedGrade1ImageLevels.length +
+        (userStats.completedGrade4TimedStories || []).length +
+        (userStats.completedGrade4TachistoscopeCount || 0) +
+        (userStats.completedGrade4RsvpCount || 0) +
+        (userStats.completedGrade4PyramidCount || 0) +
         userStats.completedSynonymGames +
         userStats.completedAntonymGames;
 
@@ -132,7 +145,8 @@ export default function App() {
     setStats((prev) => ({ ...prev, gradeLevel: grade }));
     if (grade === 1) setCurrentView("grade1");
     else if (grade === 2) setCurrentView("grade2");
-    else setCurrentView("grade3");
+    else if (grade === 3) setCurrentView("grade3");
+    else setCurrentView("grade4");
   };
 
   // Handle selecting a story to read
@@ -208,7 +222,8 @@ export default function App() {
   const handleReturnToDashboard = () => {
     if (currentGrade === 1) setCurrentView("grade1");
     else if (currentGrade === 2) setCurrentView("grade2");
-    else setCurrentView("grade3");
+    else if (currentGrade === 3) setCurrentView("grade3");
+    else setCurrentView("grade4");
   };
 
   return (
@@ -268,7 +283,22 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 4: Word Matching Game (Synonyms & Antonyms) */}
+        {/* VIEW 4: 4. Sınıf Hızlı Okuma & Anlama Dünyası */}
+        {currentView === "grade4" && (
+          <Grade4Dashboard
+            userStats={stats}
+            onUpdateStats={setStats}
+            onOpenWordGame={handleOpenWordGame}
+            onPlaySound={(type) => {
+              if (type === "correct") sounds.playCorrect();
+              else if (type === "wrong") sounds.playWrong();
+              else if (type === "chest") sounds.playTreasureFanfare();
+              else sounds.playClick();
+            }}
+          />
+        )}
+
+        {/* VIEW 5: Word Matching Game (Synonyms & Antonyms) */}
         {currentView === "wordGame" && (
           <WordMatchingGame
             gradeLevel={currentGrade === 1 ? 2 : currentGrade}
@@ -285,7 +315,7 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 5: Story Reader */}
+        {/* VIEW 6: Story Reader */}
         {currentView === "story" && activeStory && (
           <StoryReader
             story={activeStory}
@@ -298,7 +328,7 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 6: Quiz Game */}
+        {/* VIEW 7: Quiz Game */}
         {currentView === "quiz" && activeStory && (
           <QuizGame
             story={activeStory}
@@ -311,12 +341,12 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 7: Trophy Room */}
+        {/* VIEW 8: Trophy Room */}
         {currentView === "trophy" && (
           <TrophyRoom stats={stats} onBackToMap={handleReturnToDashboard} />
         )}
 
-        {/* VIEW 8: Teacher Dashboard */}
+        {/* VIEW 9: Teacher Dashboard */}
         {currentView === "teacher" && (
           <TeacherDashboard
             onClose={handleReturnToDashboard}
@@ -353,7 +383,8 @@ export default function App() {
           setShowOnboarding(false);
           if (grade === 1) setCurrentView("grade1");
           else if (grade === 2) setCurrentView("grade2");
-          else setCurrentView("grade3");
+          else if (grade === 3) setCurrentView("grade3");
+          else setCurrentView("grade4");
           syncWithServer(updated);
         }}
       />
